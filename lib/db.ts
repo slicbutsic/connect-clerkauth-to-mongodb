@@ -1,32 +1,44 @@
-import mongoose, {Mongoose} from 'mongoose';
+import mongoose, { Mongoose } from 'mongoose';
 
-const MONGODB_URL = process.env.MONGODB_URL!;
+const MONGODB_URL = process.env.MONGODB_URL as string;
 
 interface MongooseConn {
   conn: Mongoose | null;
   promise: Promise<Mongoose> | null;
 }
 
-let cached: MongooseConn = (global as any).mongoose;
-
-if(!cached) {
-  cached = (global as any).mongoose = {
-    conn: null,
-    promise: null
-  };
+// Extend the global object to include our mongoose property
+declare global {
+  // eslint-disable-next-line no-var
+  var mongoose: MongooseConn | undefined;
 }
 
-export const connect = async() => {
+const cached: MongooseConn = global.mongoose || {
+  conn: null,
+  promise: null
+};
+
+if (!global.mongoose) {
+  global.mongoose = cached;
+}
+
+export const connect = async (): Promise<Mongoose> => {
   if (cached.conn) return cached.conn;
 
-  cached.promise = cached.promise ||
-  mongoose.connect(MONGODB_URL, {
-    dbName: 'connecting-clerkauth-to-mongodb',
-    bufferCommands: false,
-    connectTimeoutMS: 30000,
-  })
+  if (!cached.promise) {
+    cached.promise = mongoose.connect(MONGODB_URL, {
+      dbName: 'connecting-clerkauth-to-mongodb',
+      bufferCommands: false,
+      connectTimeoutMS: 30000,
+    });
+  }
 
-  cached.conn = await cached.promise;
+  try {
+    cached.conn = await cached.promise;
+  } catch (e) {
+    cached.promise = null;
+    throw e;
+  }
 
   return cached.conn;
-}
+};
