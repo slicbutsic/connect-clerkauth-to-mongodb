@@ -6,6 +6,6 @@ import { Webhook } from 'svix';
 
 import { createUser } from '@/lib/actions/user.action'
 
-export async function POST(req: Rquest {
+export async function POST(req: Request {
 
 })
