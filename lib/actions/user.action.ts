@@ -17,7 +17,7 @@
 import User from '@/lib/modals/user.modal';
 import { connect } from "@/lib/db";
 
-interface UserData {
+export interface UserData {
   clerkId: string;
   email: string;
   password: string;
