@@ -6,6 +6,7 @@ import { NextResponse } from 'next/server';
 
 // import { createUser } from '@/lib/actions/user.action'
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function POST(req: Request) {
   // Your webhook handling logic here
   return NextResponse.json({ message: 'Webhook received' });
