@@ -80,7 +80,6 @@ export async function POST(req: Request) {
         },
       });
     }
-
     return NextResponse.json({ message: "New user created", user: newUser });
   }
 
